@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Ingredient, IngredientFormData, PackagingItem, PackageBundle, Recipe, RecipeFormData } from '../types/types';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = '/api'; // Updated API base URL
 
 export const api = {
     // Ingredient endpoints
@@ -49,4 +49,4 @@ export const api = {
     updateRecipe: (id: number, data: RecipeFormData) => axios.put<Recipe>(`${API_URL}/recipes/${id}`, data).then(res => res.data),
 
     deleteRecipe: (id: number) => axios.delete(`${API_URL}/recipes/${id}`).then(res => res.data),
-}; 
+};

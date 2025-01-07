@@ -12,8 +12,8 @@ app = FastAPI(title="AromaDB API")
 # Configure CORS
 origins = [
     "https://*.repl.co",     # Replit domains
-    "http://0.0.0.0:5173",   # Vite dev server
-    "http://0.0.0.0:4173",   # Vite preview
+    "http://0.0.0.0:3000",   # Vite dev server
+    "*"                      # Allow all origins in development
 ]
 
 app.add_middleware(

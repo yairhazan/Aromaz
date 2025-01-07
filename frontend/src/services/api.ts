@@ -9,8 +9,7 @@ import {
   PackageBundleCreate 
 } from '../types/types';
 
-const isDevelopment = import.meta.env.DEV;
-const API_URL = isDevelopment ? '/api' : 'https://your-production-url/api';
+const API_URL = '/api';
 
 export const api = {
   // Ingredient endpoints
@@ -50,4 +49,10 @@ export const api = {
   getRecipes: () => axios.get<Recipe[]>(`${API_URL}/recipes/`).then(res => res.data),
 
   getRecipe: (id: number) => axios.get<Recipe>(`${API_URL}/recipes/${id}`).then(res => res.data),
+
+  createRecipe: (data: RecipeFormData) => axios.post<Recipe>(`${API_URL}/recipes/`, data).then(res => res.data),
+
+  updateRecipe: (id: number, data: RecipeFormData) => axios.put<Recipe>(`${API_URL}/recipes/${id}`, data).then(res => res.data),
+
+  deleteRecipe: (id: number) => axios.delete(`${API_URL}/recipes/${id}`).then(res => res.data),
 };

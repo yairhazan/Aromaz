@@ -86,6 +86,138 @@ const materials = [
   'Other'
 ];
 
+const BundleCard = ({ bundle, onEdit, onDelete }: { 
+  bundle: PackageBundle; 
+  onEdit: () => void;
+  onDelete: () => void;
+}) => {
+  const theme = useTheme();
+  return (
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+        },
+        borderRadius: '12px',
+        overflow: 'hidden',
+        backgroundColor: 'background.paper',
+      }}
+    >
+      <CardContent sx={{ flexGrow: 1, p: 3 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            color: theme.palette.primary.dark,
+            fontWeight: 600,
+            mb: 1.5,
+            fontSize: '1.1rem',
+          }}
+        >
+          {bundle.name}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            mb: 2,
+            minHeight: '40px',
+            lineHeight: 1.5,
+          }}
+        >
+          {bundle.description}
+        </Typography>
+        
+        <Typography 
+          variant="subtitle2" 
+          sx={{ 
+            color: theme.palette.primary.main,
+            mb: 1,
+            fontWeight: 600,
+            fontSize: '0.875rem'
+          }}
+        >
+          Components:
+        </Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 1,
+          mb: 2,
+          minHeight: '60px'
+        }}>
+          {bundle.items.map((item) => (
+            <Chip
+              key={item.id}
+              label={item.name}
+              size="small"
+              sx={{
+                backgroundColor: theme.palette.secondary.light,
+                color: theme.palette.primary.dark,
+                fontWeight: 500,
+                fontSize: '0.75rem'
+              }}
+            />
+          ))}
+        </Box>
+        
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          mt: 'auto',
+          pt: 2,
+          borderTop: `1px solid ${theme.palette.divider}`
+        }}>
+          <Typography variant="body2" color="text.secondary">
+            Capacity: <strong>{bundle.capacity}ml</strong>
+          </Typography>
+          <Typography variant="subtitle1" color="primary.main" fontWeight="600">
+            ${bundle.total_price.toFixed(2)}
+          </Typography>
+        </Box>
+      </CardContent>
+      <CardActions sx={{ 
+        p: 2, 
+        pt: 0, 
+        justifyContent: 'space-between',
+        borderTop: `1px solid ${theme.palette.divider}`
+      }}>
+        <Button
+          size="small"
+          onClick={onEdit}
+          startIcon={<EditIcon />}
+          sx={{
+            color: theme.palette.primary.main,
+            '&:hover': {
+              backgroundColor: theme.palette.primary.light + '20',
+            }
+          }}
+        >
+          Edit
+        </Button>
+        <Button
+          size="small"
+          onClick={onDelete}
+          startIcon={<DeleteIcon />}
+          sx={{
+            color: theme.palette.error.main,
+            '&:hover': {
+              backgroundColor: theme.palette.error.light + '20',
+            }
+          }}
+        >
+          Delete
+        </Button>
+      </CardActions>
+    </Card>
+  );
+};
+
 export default function PackagingList() {
   const [packagingItems, setPackagingItems] = useState<PackagingItem[]>([]);
   const [packageBundles, setPackageBundles] = useState<PackageBundle[]>([]);
@@ -319,14 +451,15 @@ export default function PackagingList() {
   };
 
   return (
-    <Container>
+    <Container maxWidth="xl">
       <Paper
         elevation={0}
         sx={{
-          p: { xs: 2, sm: 3 },
+          p: { xs: 2, sm: 3, md: 4 },
           background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.secondary.light}15)`,
           borderRadius: '16px',
           mb: 4,
+          minHeight: 'calc(100vh - 100px)',
         }}
       >
         <Box sx={{ 
@@ -335,7 +468,7 @@ export default function PackagingList() {
           justifyContent: 'space-between',
           alignItems: { xs: 'stretch', sm: 'center' },
           gap: 2,
-          mb: 3
+          mb: 4
         }}>
           <Typography 
             variant="h4" 
@@ -349,59 +482,61 @@ export default function PackagingList() {
           </Typography>
         </Box>
 
-        <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={6}>
-            <Button
-              variant="contained"
-              onClick={() => setActiveTab('items')}
-              sx={{
-                borderRadius: '20px',
-                px: 3,
-                py: { xs: 1, sm: 1.5 },
-                backgroundColor: activeTab === 'items' ? theme.palette.primary.main : theme.palette.secondary.main,
-                color: activeTab === 'items' ? 'white' : theme.palette.primary.dark,
-                '&:hover': {
-                  backgroundColor: activeTab === 'items' ? theme.palette.primary.dark : theme.palette.secondary.dark,
-                },
-                boxShadow: '0 4px 12px rgba(74, 124, 89, 0.2)',
-                width: '100%',
-                fontSize: { xs: '0.875rem', sm: '1rem' },
-              }}
-            >
-              Packaging Items
-            </Button>
+        <Box sx={{ mb: 4 }}>
+          <Grid container spacing={2} maxWidth="md" mx="auto">
+            <Grid item xs={6}>
+              <Button
+                fullWidth
+                variant={activeTab === 'items' ? "contained" : "outlined"}
+                onClick={() => setActiveTab('items')}
+                sx={{
+                  borderRadius: '8px',
+                  py: 1.5,
+                  backgroundColor: activeTab === 'items' ? 'primary.main' : 'transparent',
+                  borderColor: activeTab === 'items' ? 'transparent' : 'primary.main',
+                  color: activeTab === 'items' ? 'white' : 'primary.main',
+                  '&:hover': {
+                    backgroundColor: activeTab === 'items' ? 'primary.dark' : 'transparent',
+                    borderColor: 'primary.main',
+                  },
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  textTransform: 'none',
+                }}
+              >
+                Packaging Items
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                fullWidth
+                variant={activeTab === 'bundles' ? "contained" : "outlined"}
+                onClick={() => setActiveTab('bundles')}
+                sx={{
+                  borderRadius: '8px',
+                  py: 1.5,
+                  backgroundColor: activeTab === 'bundles' ? 'primary.main' : 'transparent',
+                  borderColor: activeTab === 'bundles' ? 'transparent' : 'primary.main',
+                  color: activeTab === 'bundles' ? 'white' : 'primary.main',
+                  '&:hover': {
+                    backgroundColor: activeTab === 'bundles' ? 'primary.dark' : 'transparent',
+                    borderColor: 'primary.main',
+                  },
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  textTransform: 'none',
+                }}
+              >
+                Package Bundles
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Button
-              variant="contained"
-              onClick={() => setActiveTab('bundles')}
-              sx={{
-                borderRadius: '20px',
-                px: 3,
-                py: { xs: 1, sm: 1.5 },
-                backgroundColor: activeTab === 'bundles' ? theme.palette.primary.main : theme.palette.secondary.main,
-                color: activeTab === 'bundles' ? 'white' : theme.palette.primary.dark,
-                '&:hover': {
-                  backgroundColor: activeTab === 'bundles' ? theme.palette.primary.dark : theme.palette.secondary.dark,
-                },
-                boxShadow: '0 4px 12px rgba(74, 124, 89, 0.2)',
-                width: '100%',
-                fontSize: { xs: '0.875rem', sm: '1rem' },
-              }}
-            >
-              Package Bundles
-            </Button>
-          </Grid>
-        </Grid>
+        </Box>
 
         {activeTab === 'items' ? (
           <>
             <Box sx={{ 
               display: 'flex', 
-              flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'space-between',
-              alignItems: { xs: 'stretch', sm: 'center' },
-              gap: 2,
+              alignItems: 'center',
               mb: 3
             }}>
               <Typography 
@@ -417,24 +552,22 @@ export default function PackagingList() {
               <Button
                 variant="contained"
                 onClick={() => handleOpenItemDialog()}
+                startIcon={<AddIcon />}
                 sx={{
-                  borderRadius: '20px',
+                  borderRadius: '12px',
                   px: 3,
                   py: 1,
                   backgroundColor: theme.palette.primary.main,
-                  color: 'white',
                   '&:hover': {
                     backgroundColor: theme.palette.primary.dark,
                   },
-                  boxShadow: '0 4px 12px rgba(74, 124, 89, 0.2)',
-                  alignSelf: { xs: 'stretch', sm: 'auto' },
                 }}
               >
                 Add Item
               </Button>
             </Box>
             <Box sx={{ 
-              height: 500,
+              height: 'calc(100vh - 250px)',
               width: '100%',
               '& .MuiDataGrid-root': {
                 border: 'none',
@@ -450,24 +583,6 @@ export default function PackagingList() {
               '& .MuiDataGrid-row:hover': {
                 backgroundColor: theme.palette.secondary.light + '30',
               },
-              '& .MuiDataGrid-footer': {
-                borderTop: `1px solid ${theme.palette.divider}`,
-              },
-              '& .MuiDataGrid-virtualScroller': {
-                overflow: 'auto',
-                '&::-webkit-scrollbar': {
-                  width: '8px',
-                  height: '8px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: theme.palette.primary.light,
-                  borderRadius: '4px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: theme.palette.background.paper,
-                  borderRadius: '4px',
-                },
-              },
             }}>
               <DataGrid
                 rows={packagingItems}
@@ -475,19 +590,12 @@ export default function PackagingList() {
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
                 pageSizeOptions={[5, 10, 25]}
-                pagination
-                autoHeight
                 disableRowSelectionOnClick
                 getRowHeight={() => 'auto'}
-                rowCount={packagingItems.length}
-                paginationMode="client"
-                density="comfortable"
                 sx={{
                   '& .MuiDataGrid-cell': {
-                    py: 1,
+                    py: 1.5,
                     px: 2,
-                    whiteSpace: 'normal',
-                    minHeight: '48px !important',
                   },
                 }}
               />
@@ -497,10 +605,8 @@ export default function PackagingList() {
           <>
             <Box sx={{ 
               display: 'flex', 
-              flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'space-between',
-              alignItems: { xs: 'stretch', sm: 'center' },
-              gap: 2,
+              alignItems: 'center',
               mb: 3
             }}>
               <Typography 
@@ -516,116 +622,37 @@ export default function PackagingList() {
               <Button
                 variant="contained"
                 onClick={() => handleOpenBundleDialog()}
+                startIcon={<AddIcon />}
                 sx={{
-                  borderRadius: '20px',
+                  borderRadius: '12px',
                   px: 3,
                   py: 1,
                   backgroundColor: theme.palette.primary.main,
-                  color: 'white',
                   '&:hover': {
                     backgroundColor: theme.palette.primary.dark,
                   },
-                  boxShadow: '0 4px 12px rgba(74, 124, 89, 0.2)',
-                  alignSelf: { xs: 'stretch', sm: 'auto' },
                 }}
               >
                 Create Bundle
               </Button>
             </Box>
-            <Grid container spacing={{ xs: 2, sm: 3 }}>
-              {packageBundles.map((bundle) => (
-                <Grid item xs={12} sm={6} md={4} key={bundle.id}>
-                  <Card
-                    sx={{
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                      '&:hover': {
-                        transform: 'translateY(-4px)',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                      },
-                      borderRadius: '12px',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <CardContent sx={{ flexGrow: 1, p: { xs: 2, sm: 3 } }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: theme.palette.primary.dark,
-                          fontWeight: 600,
-                          mb: 1,
-                          fontSize: { xs: '1.1rem', sm: '1.25rem' }
-                        }}
-                      >
-                        {bundle.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        sx={{ 
-                          mb: 2,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {bundle.description}
-                      </Typography>
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" sx={{ color: theme.palette.primary.main, mb: 1 }}>
-                          Items:
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {bundle.items.map((item) => (
-                            <Chip
-                              key={item.id}
-                              label={item.name}
-                              size="small"
-                              sx={{
-                                backgroundColor: theme.palette.secondary.light,
-                                color: theme.palette.primary.dark,
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    </CardContent>
-                    <CardActions sx={{ p: { xs: 1.5, sm: 2 }, pt: 0, justifyContent: 'space-between' }}>
-                      <Button
-                        size="small"
-                        onClick={() => handleOpenBundleDialog(bundle)}
-                        startIcon={<EditIcon />}
-                        sx={{
-                          color: theme.palette.primary.main,
-                          '&:hover': {
-                            backgroundColor: theme.palette.primary.light + '20',
-                          }
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => handleDeleteBundle(bundle.id)}
-                        startIcon={<DeleteIcon />}
-                        sx={{
-                          color: theme.palette.error.main,
-                          '&:hover': {
-                            backgroundColor: theme.palette.error.light + '20',
-                          }
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+            <Box sx={{ 
+              minHeight: 'calc(100vh - 250px)',
+              width: '100%',
+              overflow: 'auto'
+            }}>
+              <Grid container spacing={3} sx={{ pb: 3 }}>
+                {packageBundles.map((bundle) => (
+                  <Grid item xs={12} sm={6} md={4} key={bundle.id}>
+                    <BundleCard
+                      bundle={bundle}
+                      onEdit={() => handleOpenBundleDialog(bundle)}
+                      onDelete={() => handleDeleteBundle(bundle.id)}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
           </>
         )}
       </Paper>

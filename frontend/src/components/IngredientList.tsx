@@ -26,7 +26,7 @@ import {
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { api } from '../services/api';
 import { Ingredient, IngredientFormData } from '../types/types';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 
 const ingredientTypes = [
   'Essential Oil',
@@ -54,6 +54,10 @@ export default function IngredientList() {
   const [formData, setFormData] = useState<IngredientFormData>(defaultFormData);
   const [editingId, setEditingId] = useState<number | null>(null);
   const theme = useTheme();
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 5,
+    page: 0,
+  });
 
   useEffect(() => {
     loadIngredients();
@@ -168,6 +172,10 @@ export default function IngredientList() {
       width: 150,
       flex: 0.8,
       minWidth: 100,
+      renderCell: (params: GridRenderCellParams) => {
+        const ingredient = params.row as Ingredient;
+        return `$${(ingredient.price_per_ml || 0).toFixed(2)}/${ingredient.measurement_type}`;
+      },
     },
     { 
       field: 'stock_amount', 
@@ -175,6 +183,10 @@ export default function IngredientList() {
       width: 150,
       flex: 0.8,
       minWidth: 100,
+      renderCell: (params: GridRenderCellParams) => {
+        const ingredient = params.row as Ingredient;
+        return `${ingredient.stock_amount} ${ingredient.measurement_type}`;
+      },
     },
     {
       field: 'actions',
@@ -182,26 +194,24 @@ export default function IngredientList() {
       width: 120,
       flex: 0.5,
       minWidth: 100,
-      renderCell: ({ row }: { row: Ingredient }) => {
-        return (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <IconButton 
-              onClick={() => handleOpen(row)} 
-              color="primary"
-              size="small"
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton 
-              onClick={() => handleDelete(row.id)} 
-              color="error"
-              size="small"
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        );
-      },
+      renderCell: (params: GridRenderCellParams) => (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton 
+            onClick={() => handleOpen(params.row as Ingredient)} 
+            color="primary"
+            size="small"
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton 
+            onClick={() => handleDelete((params.row as Ingredient).id)} 
+            color="error"
+            size="small"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      ),
     },
   ];
 
@@ -264,10 +274,8 @@ export default function IngredientList() {
           <DataGrid
             rows={ingredients}
             columns={columns}
-            paginationModel={{
-              pageSize: 5,
-              page: 0,
-            }}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
             pageSizeOptions={[5, 10, 25]}
             disableRowSelectionOnClick
             sx={{

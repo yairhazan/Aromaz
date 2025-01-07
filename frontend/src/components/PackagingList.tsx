@@ -451,15 +451,25 @@ export default function PackagingList() {
   };
 
   return (
-    <Container maxWidth="xl">
+    <Container 
+      maxWidth={false} 
+      sx={{ 
+        p: { xs: 2, sm: 3 },
+        height: 'calc(100vh - 64px)', // 64px is the header height
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Paper
         elevation={0}
         sx={{
           p: { xs: 2, sm: 3, md: 4 },
           background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.secondary.light}15)`,
           borderRadius: '16px',
-          mb: 4,
-          minHeight: 'calc(100vh - 100px)',
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         <Box sx={{ 
@@ -468,7 +478,7 @@ export default function PackagingList() {
           justifyContent: 'space-between',
           alignItems: { xs: 'stretch', sm: 'center' },
           gap: 2,
-          mb: 4
+          mb: 3
         }}>
           <Typography 
             variant="h4" 
@@ -482,7 +492,7 @@ export default function PackagingList() {
           </Typography>
         </Box>
 
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
           <Grid container spacing={2} maxWidth="md" mx="auto">
             <Grid item xs={6}>
               <Button
@@ -531,130 +541,134 @@ export default function PackagingList() {
           </Grid>
         </Box>
 
-        {activeTab === 'items' ? (
-          <>
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              mb: 3
-            }}>
-              <Typography 
-                variant="h5"
-                sx={{
-                  fontSize: { xs: '1.25rem', sm: '1.5rem' },
-                  color: theme.palette.primary.dark,
-                  fontWeight: 600,
-                }}
-              >
-                Packaging Items
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={() => handleOpenItemDialog()}
-                startIcon={<AddIcon />}
-                sx={{
-                  borderRadius: '12px',
-                  px: 3,
-                  py: 1,
-                  backgroundColor: theme.palette.primary.main,
-                  '&:hover': {
-                    backgroundColor: theme.palette.primary.dark,
-                  },
-                }}
-              >
-                Add Item
-              </Button>
-            </Box>
-            <Box sx={{ 
-              height: 'calc(100vh - 250px)',
-              width: '100%',
-              '& .MuiDataGrid-root': {
-                border: 'none',
-                backgroundColor: 'transparent',
-              },
-              '& .MuiDataGrid-cell': {
-                borderColor: theme.palette.divider,
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: theme.palette.primary.light + '20',
-                borderRadius: '8px 8px 0 0',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: theme.palette.secondary.light + '30',
-              },
-            }}>
-              <DataGrid
-                rows={packagingItems}
-                columns={columns}
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[5, 10, 25]}
-                disableRowSelectionOnClick
-                getRowHeight={() => 'auto'}
-                sx={{
-                  '& .MuiDataGrid-cell': {
-                    py: 1.5,
-                    px: 2,
-                  },
-                }}
-              />
-            </Box>
-          </>
-        ) : (
-          <>
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              mb: 3
-            }}>
-              <Typography 
-                variant="h5"
-                sx={{
-                  fontSize: { xs: '1.25rem', sm: '1.5rem' },
-                  color: theme.palette.primary.dark,
-                  fontWeight: 600,
-                }}
-              >
-                Package Bundles
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={() => handleOpenBundleDialog()}
-                startIcon={<AddIcon />}
-                sx={{
-                  borderRadius: '12px',
-                  px: 3,
-                  py: 1,
-                  backgroundColor: theme.palette.primary.main,
-                  '&:hover': {
-                    backgroundColor: theme.palette.primary.dark,
-                  },
-                }}
-              >
-                Create Bundle
-              </Button>
-            </Box>
-            <Box sx={{ 
-              minHeight: 'calc(100vh - 250px)',
-              width: '100%',
-              overflow: 'auto'
-            }}>
-              <Grid container spacing={3} sx={{ pb: 3 }}>
-                {packageBundles.map((bundle) => (
-                  <Grid item xs={12} sm={6} md={4} key={bundle.id}>
-                    <BundleCard
-                      bundle={bundle}
-                      onEdit={() => handleOpenBundleDialog(bundle)}
-                      onDelete={() => handleDeleteBundle(bundle.id)}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          </>
-        )}
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {activeTab === 'items' ? (
+            <>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2
+              }}>
+                <Typography 
+                  variant="h5"
+                  sx={{
+                    fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                    color: theme.palette.primary.dark,
+                    fontWeight: 600,
+                  }}
+                >
+                  Packaging Items
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={() => handleOpenItemDialog()}
+                  startIcon={<AddIcon />}
+                  sx={{
+                    borderRadius: '12px',
+                    px: 3,
+                    py: 1,
+                    backgroundColor: theme.palette.primary.main,
+                    '&:hover': {
+                      backgroundColor: theme.palette.primary.dark,
+                    },
+                  }}
+                >
+                  Add Item
+                </Button>
+              </Box>
+              <Box sx={{ 
+                flexGrow: 1,
+                overflow: 'hidden',
+                '& .MuiDataGrid-root': {
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                },
+                '& .MuiDataGrid-cell': {
+                  borderColor: theme.palette.divider,
+                },
+                '& .MuiDataGrid-columnHeaders': {
+                  backgroundColor: theme.palette.primary.light + '20',
+                  borderRadius: '8px 8px 0 0',
+                },
+                '& .MuiDataGrid-row:hover': {
+                  backgroundColor: theme.palette.secondary.light + '30',
+                },
+              }}>
+                <DataGrid
+                  rows={packagingItems}
+                  columns={columns}
+                  paginationModel={paginationModel}
+                  onPaginationModelChange={setPaginationModel}
+                  pageSizeOptions={[5, 10, 25]}
+                  disableRowSelectionOnClick
+                  getRowHeight={() => 'auto'}
+                  sx={{
+                    height: '100%',
+                    '& .MuiDataGrid-cell': {
+                      py: 1.5,
+                      px: 2,
+                    },
+                  }}
+                />
+              </Box>
+            </>
+          ) : (
+            <>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2
+              }}>
+                <Typography 
+                  variant="h5"
+                  sx={{
+                    fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                    color: theme.palette.primary.dark,
+                    fontWeight: 600,
+                  }}
+                >
+                  Package Bundles
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={() => handleOpenBundleDialog()}
+                  startIcon={<AddIcon />}
+                  sx={{
+                    borderRadius: '12px',
+                    px: 3,
+                    py: 1,
+                    backgroundColor: theme.palette.primary.main,
+                    '&:hover': {
+                      backgroundColor: theme.palette.primary.dark,
+                    },
+                  }}
+                >
+                  Create Bundle
+                </Button>
+              </Box>
+              <Box sx={{ 
+                flexGrow: 1,
+                overflow: 'auto',
+                mx: -2,
+                px: 2,
+              }}>
+                <Grid container spacing={3} sx={{ pb: 3 }}>
+                  {packageBundles.map((bundle) => (
+                    <Grid item xs={12} sm={6} md={4} key={bundle.id}>
+                      <BundleCard
+                        bundle={bundle}
+                        onEdit={() => handleOpenBundleDialog(bundle)}
+                        onDelete={() => handleDeleteBundle(bundle.id)}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            </>
+          )}
+        </Box>
       </Paper>
 
       <Dialog

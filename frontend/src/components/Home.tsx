@@ -1,62 +1,161 @@
-
-import { Container, Typography, Paper, Grid, Button } from '@mui/material';
+import { Box, Typography, Paper, Grid, Card, CardContent, useTheme, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-export default function Home() {
+const Home = () => {
+  const theme = useTheme();
+
+  const features = [
+    {
+      title: 'Natural Ingredients',
+      description: 'Explore our comprehensive database of essential oils and natural ingredients.',
+      icon: '🌿',
+      link: '/ingredients'
+    },
+    {
+      title: 'Blend Recipes',
+      description: 'Discover and create harmonious aromatherapy blends with our recipe collection.',
+      icon: '🧪',
+      link: '/recipes'
+    },
+    {
+      title: 'Packaging Solutions',
+      description: 'Find the perfect packaging for your aromatherapy products.',
+      icon: '📦',
+      link: '/packaging'
+    }
+  ];
+
   return (
-    <Container maxWidth="lg">
-      <Paper elevation={3} sx={{ p: 4, mt: 4, backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
-        <Typography variant="h3" component="h1" gutterBottom align="center">
+    <Box sx={{ textAlign: 'center', py: 4 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 6,
+          background: `linear-gradient(135deg, ${theme.palette.primary.light}15, ${theme.palette.secondary.light}40)`,
+          borderRadius: '24px',
+          mb: 6,
+        }}
+      >
+        <Typography
+          variant="h3"
+          component="h1"
+          sx={{
+            color: theme.palette.primary.dark,
+            fontWeight: 700,
+            mb: 2,
+            fontSize: { xs: '2rem', md: '3rem' }
+          }}
+        >
           Welcome to AromaDB
         </Typography>
-        <Typography variant="h5" component="h2" gutterBottom align="center" color="textSecondary">
-          Your Aromatherapy Recipe Management System
+        <Typography
+          variant="h6"
+          sx={{
+            color: theme.palette.text.secondary,
+            mb: 4,
+            maxWidth: '800px',
+            mx: 'auto',
+            lineHeight: 1.6
+          }}
+        >
+          Your comprehensive database for aromatherapy ingredients, recipes, and packaging solutions.
+          Create beautiful blends with confidence using our curated collection of resources.
         </Typography>
-        
-        <Grid container spacing={4} sx={{ mt: 4 }}>
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 3, height: '100%', textAlign: 'center' }}>
-              <Typography variant="h6" gutterBottom>
-                Ingredients
-              </Typography>
-              <Typography paragraph>
-                Manage your essential oils, carrier oils, and other aromatherapy ingredients.
-              </Typography>
-              <Button component={Link} to="/ingredients" variant="contained" color="primary">
-                View Ingredients
-              </Button>
-            </Paper>
-          </Grid>
-          
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 3, height: '100%', textAlign: 'center' }}>
-              <Typography variant="h6" gutterBottom>
-                Recipes
-              </Typography>
-              <Typography paragraph>
-                Create and manage your aromatherapy blend recipes.
-              </Typography>
-              <Button component={Link} to="/recipes" variant="contained" color="primary">
-                View Recipes
-              </Button>
-            </Paper>
-          </Grid>
-          
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 3, height: '100%', textAlign: 'center' }}>
-              <Typography variant="h6" gutterBottom>
-                Packaging
-              </Typography>
-              <Typography paragraph>
-                Organize your packaging materials and bundles.
-              </Typography>
-              <Button component={Link} to="/packaging" variant="contained" color="primary">
-                View Packaging
-              </Button>
-            </Paper>
-          </Grid>
-        </Grid>
       </Paper>
-    </Container>
+
+      <Grid container spacing={4} sx={{ mb: 6 }}>
+        {features.map((feature) => (
+          <Grid item xs={12} md={4} key={feature.title}>
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'transform 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-8px)',
+                },
+                background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.secondary.light}15)`,
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1, textAlign: 'center', p: 4 }}>
+                <Typography variant="h2" sx={{ mb: 2, fontSize: '3rem' }}>
+                  {feature.icon}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  sx={{
+                    mb: 2,
+                    color: theme.palette.primary.dark,
+                    fontWeight: 600
+                  }}
+                >
+                  {feature.title}
+                </Typography>
+                <Typography
+                  sx={{
+                    mb: 3,
+                    color: theme.palette.text.secondary
+                  }}
+                >
+                  {feature.description}
+                </Typography>
+                <Button
+                  component={Link}
+                  to={feature.link}
+                  variant="outlined"
+                  color="primary"
+                  sx={{
+                    borderRadius: '20px',
+                    px: 3,
+                    '&:hover': {
+                      backgroundColor: theme.palette.primary.main,
+                      color: 'white',
+                    }
+                  }}
+                >
+                  Explore
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Paper
+        elevation={0}
+        sx={{
+          p: 4,
+          background: `linear-gradient(135deg, ${theme.palette.secondary.light}30, ${theme.palette.primary.light}15)`,
+          borderRadius: '16px',
+        }}
+      >
+        <Typography variant="h5" sx={{ mb: 2, color: theme.palette.primary.dark }}>
+          Start Your Aromatherapy Journey
+        </Typography>
+        <Typography sx={{ color: theme.palette.text.secondary, mb: 3 }}>
+          Whether you're a beginner or an experienced aromatherapist,
+          our tools will help you create perfect blends for any purpose.
+        </Typography>
+        <Button
+          component={Link}
+          to="/ingredients"
+          variant="contained"
+          color="primary"
+          sx={{
+            borderRadius: '20px',
+            px: 4,
+            py: 1.5,
+            fontSize: '1.1rem',
+            boxShadow: '0 4px 12px rgba(74, 124, 89, 0.2)',
+          }}
+        >
+          Get Started
+        </Button>
+      </Paper>
+    </Box>
   );
-}
+};
+
+export default Home;

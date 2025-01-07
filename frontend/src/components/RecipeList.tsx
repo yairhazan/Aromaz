@@ -3,30 +3,38 @@ import {
   Container,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
   MenuItem,
-  Grid,
+  IconButton,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
   InputAdornment,
+  Box,
+  Chip,
+  useTheme,
+  Paper,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
 import { api } from '../services/api';
-import { Recipe, RecipeFormData, Ingredient, PackageBundle } from '../types/types';
+import { Recipe, RecipeFormData, Ingredient, PackageBundle, RecipeIngredient } from '../types/types';
+
+interface ExtendedRecipe extends Recipe {
+  recipe_ingredients: Array<{
+    ingredient: Ingredient;
+    amount_ml: number;
+  }>;
+  package_bundle: PackageBundle;
+}
 
 const defaultFormData: RecipeFormData = {
   name: '',
@@ -39,7 +47,7 @@ const defaultFormData: RecipeFormData = {
 };
 
 export default function RecipeList() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [recipes, setRecipes] = useState<ExtendedRecipe[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [packageBundles, setPackageBundles] = useState<PackageBundle[]>([]);
   const [open, setOpen] = useState(false);
@@ -47,6 +55,7 @@ export default function RecipeList() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [selectedIngredient, setSelectedIngredient] = useState<number>(0);
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
+  const theme = useTheme();
 
   useEffect(() => {
     loadData();
@@ -67,7 +76,7 @@ export default function RecipeList() {
     }
   };
 
-  const handleOpen = (recipe?: Recipe) => {
+  const handleOpen = (recipe?: ExtendedRecipe) => {
     if (recipe) {
       setFormData({
         name: recipe.name,
@@ -200,54 +209,193 @@ export default function RecipeList() {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        Aromatherapy Recipes
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleOpen()}
-        style={{ marginBottom: '20px' }}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2, sm: 3 },
+          background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.secondary.light}15)`,
+          borderRadius: '16px',
+          mb: 4,
+        }}
       >
-        Create New Recipe
-      </Button>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 2,
+          mb: 3
+        }}>
+          <Typography 
+            variant="h4" 
+            sx={{
+              fontSize: { xs: '1.5rem', sm: '2rem' },
+              color: theme.palette.primary.dark,
+              fontWeight: 600,
+            }}
+          >
+            Aromatherapy Recipes
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => handleOpen()}
+            sx={{
+              borderRadius: '20px',
+              px: 3,
+              py: 1,
+              backgroundColor: theme.palette.primary.main,
+              color: 'white',
+              '&:hover': {
+                backgroundColor: theme.palette.primary.dark,
+              },
+              boxShadow: '0 4px 12px rgba(74, 124, 89, 0.2)',
+              alignSelf: { xs: 'stretch', sm: 'auto' },
+            }}
+          >
+            Create New Recipe
+          </Button>
+        </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Volume</TableCell>
-              <TableCell>Package</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {recipes.map((recipe) => (
-              <TableRow key={recipe.id}>
-                <TableCell>{recipe.name}</TableCell>
-                <TableCell>{recipe.description}</TableCell>
-                <TableCell>{recipe.total_volume_ml}ml</TableCell>
-                <TableCell>{recipe.package_bundle.name}</TableCell>
-                <TableCell>${recipe.retail_price?.toFixed(2)}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleOpen(recipe)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(recipe.id)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        <Grid container spacing={{ xs: 2, sm: 3 }}>
+          {recipes.map((recipe) => (
+            <Grid item xs={12} sm={6} md={4} key={recipe.id}>
+              <Card
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                  },
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1, p: { xs: 2, sm: 3 } }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: theme.palette.primary.dark,
+                      fontWeight: 600,
+                      mb: 1,
+                      fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                    }}
+                  >
+                    {recipe.name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ 
+                      mb: 2,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {recipe.description}
+                  </Typography>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography 
+                      variant="subtitle2" 
+                      sx={{ 
+                        color: theme.palette.primary.main, 
+                        mb: 1,
+                        fontSize: { xs: '0.875rem', sm: '1rem' }
+                      }}
+                    >
+                      Ingredients:
+                    </Typography>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexWrap: 'wrap', 
+                      gap: 0.5,
+                      maxHeight: '80px',
+                      overflow: 'auto',
+                      '&::-webkit-scrollbar': {
+                        width: '4px',
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: theme.palette.primary.light,
+                        borderRadius: '2px',
+                      },
+                    }}>
+                      {recipe.recipe_ingredients.map((ri) => (
+                        <Chip
+                          key={ri.ingredient.id}
+                          label={`${ri.ingredient.name} (${ri.amount_ml}ml)`}
+                          size="small"
+                          sx={{
+                            backgroundColor: theme.palette.secondary.light,
+                            color: theme.palette.primary.dark,
+                            fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  </Box>
+                </CardContent>
+                <CardActions sx={{ p: { xs: 1.5, sm: 2 }, pt: 0, justifyContent: 'space-between' }}>
+                  <Button
+                    size="small"
+                    onClick={() => handleOpen(recipe)}
+                    startIcon={<EditIcon />}
+                    sx={{
+                      color: theme.palette.primary.main,
+                      '&:hover': {
+                        backgroundColor: theme.palette.primary.light + '20',
+                      }
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    onClick={() => handleDelete(recipe.id)}
+                    startIcon={<DeleteIcon />}
+                    sx={{
+                      color: theme.palette.error.main,
+                      '&:hover': {
+                        backgroundColor: theme.palette.error.light + '20',
+                      }
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
 
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>{editingId ? 'Edit Recipe' : 'Create New Recipe'}</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+            margin: { xs: 2, sm: 4 },
+            maxHeight: 'calc(100% - 32px)',
+            overflow: 'auto'
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{ 
+            backgroundColor: theme.palette.primary.light + '20',
+            color: theme.palette.primary.dark,
+          }}
+        >
+          {editingId ? 'Edit Recipe' : 'Create New Recipe'}
+        </DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>

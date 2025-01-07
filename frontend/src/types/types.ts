@@ -45,6 +45,14 @@ export interface PackageBundle {
     items: PackagingItem[];
 }
 
+export interface PackageBundleCreate {
+    name: string;
+    description: string;
+    capacity: number;
+    notes?: string;
+    item_ids: number[];
+}
+
 export interface RecipeIngredient {
     ingredient: Ingredient;
     amount_ml: number;

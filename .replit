@@ -1,6 +1,6 @@
 
 modules = ["nodejs-20", "python-3.12", "web"]
-run = "cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000 & cd frontend && npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+run = "cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 3000 & cd frontend && npm install && npm run dev -- --host 0.0.0.0 --port 5173"
 
 [nix]
 channel = "stable-24_05"
@@ -9,5 +9,5 @@ channel = "stable-24_05"
 localPort = 5173
 
 [[ports]]
-localPort = 8000
+localPort = 3000
 externalPort = 80

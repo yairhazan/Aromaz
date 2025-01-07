@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Ingredient, IngredientFormData, PackagingItem, PackageBundle, Recipe, RecipeFormData } from '../types/types';
 
-const API_URL = '/api'; // Updated API base URL
+const API_URL = '/api';
 
 export const api = {
     // Ingredient endpoints

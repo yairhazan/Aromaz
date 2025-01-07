@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { AppBar, Toolbar, Typography, Button, CssBaseline, Container, Box } from '@mui/material';
+import Home from './components/Home';
 import IngredientList from './components/IngredientList';
 import RecipeList from './components/RecipeList';
 import PackagingList from './components/PackagingList';
@@ -98,7 +99,7 @@ function App() {
             }}
           >
             <Routes>
-              <Route path="/" element={<RecipeList />} />
+              <Route path="/" element={<Home />} />
               <Route path="/ingredients" element={<IngredientList />} />
               <Route path="/recipes" element={<RecipeList />} />
               <Route path="/packaging" element={<PackagingList />} />

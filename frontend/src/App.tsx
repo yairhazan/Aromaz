@@ -1,10 +1,16 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { AppBar, Toolbar, Typography, Button, CssBaseline, Container, Box } from '@mui/material';
+import { CssBaseline, Container, Box, Toolbar } from '@mui/material';
 import Home from './components/Home';
 import IngredientList from './components/IngredientList';
 import RecipeList from './components/RecipeList';
 import PackagingList from './components/PackagingList';
+import SignIn from './components/auth/SignIn';
+import Register from './components/auth/Register';
+import Header from './components/Header';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { auth } from './config/firebase';
+import { signOut } from 'firebase/auth';
 
 const theme = createTheme({
   palette: {
@@ -67,130 +73,91 @@ const theme = createTheme({
   },
 });
 
+interface PrivateRouteProps {
+  children: React.ReactNode;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+  const { currentUser, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  return currentUser ? <>{children}</> : <Navigate to="/signin" />;
+};
+
 function App() {
+  const { currentUser } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          minHeight: '100vh',
-          maxWidth: '100vw',
-          overflow: 'hidden'
-        }}>
-          <AppBar position="fixed">
-            <Toolbar sx={{ 
-              justifyContent: 'space-between',
-              px: { xs: 2, sm: 4 },
-              minHeight: { xs: '56px', sm: '64px' }
-            }}>
-              <Typography 
-                variant="h6" 
-                component={Link}
-                to="/"
-                sx={{ 
-                  color: 'white',
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  fontSize: { xs: '1.1rem', sm: '1.25rem' }
-                }}
-              >
-                🌿 AromaDB
-              </Typography>
+        <AuthProvider>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            minHeight: '100vh',
+            maxWidth: '100vw',
+            overflow: 'hidden'
+          }}>
+            <Header />
+            <Toolbar />
+            <Container 
+              component="main" 
+              sx={{ 
+                flexGrow: 1, 
+                pt: { xs: 2, sm: 3, md: 4 }, 
+                pb: { xs: 4, sm: 5, md: 6 },
+                px: { xs: 2, sm: 3, md: 4 },
+                backgroundColor: 'transparent',
+                maxWidth: '100%',
+                overflow: 'auto'
+              }}
+              maxWidth={false}
+            >
               <Box sx={{ 
-                display: 'flex', 
-                gap: { xs: 1, sm: 2 },
-                overflow: 'auto',
-                maxWidth: 'calc(100vw - 150px)',
-                '&::-webkit-scrollbar': { display: 'none' },
-                msOverflowStyle: 'none',
-                scrollbarWidth: 'none'
+                maxWidth: '1600px', 
+                mx: 'auto',
+                width: '100%'
               }}>
-                <Button 
-                  color="inherit" 
-                  component={Link} 
-                  to="/ingredients"
-                  sx={{ 
-                    '&:hover': { 
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      transition: 'all 0.3s ease',
-                    },
-                    borderRadius: '20px',
-                    whiteSpace: 'nowrap',
-                    minWidth: 'auto',
-                    px: { xs: 2, sm: 3 }
-                  }}
-                >
-                  Ingredients
-                </Button>
-                <Button 
-                  color="inherit" 
-                  component={Link} 
-                  to="/recipes"
-                  sx={{ 
-                    '&:hover': { 
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      transition: 'all 0.3s ease',
-                    },
-                    borderRadius: '20px',
-                    whiteSpace: 'nowrap',
-                    minWidth: 'auto',
-                    px: { xs: 2, sm: 3 }
-                  }}
-                >
-                  Recipes
-                </Button>
-                <Button 
-                  color="inherit" 
-                  component={Link} 
-                  to="/packaging"
-                  sx={{ 
-                    '&:hover': { 
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      transition: 'all 0.3s ease',
-                    },
-                    borderRadius: '20px',
-                    whiteSpace: 'nowrap',
-                    minWidth: 'auto',
-                    px: { xs: 2, sm: 3 }
-                  }}
-                >
-                  Packaging
-                </Button>
+                <Routes>
+                  <Route path="/signin" element={<SignIn />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/" element={
+                    <PrivateRoute>
+                      <Home />
+                    </PrivateRoute>
+                  } />
+                  <Route path="/ingredients" element={
+                    <PrivateRoute>
+                      <IngredientList />
+                    </PrivateRoute>
+                  } />
+                  <Route path="/recipes" element={
+                    <PrivateRoute>
+                      <RecipeList />
+                    </PrivateRoute>
+                  } />
+                  <Route path="/packaging" element={
+                    <PrivateRoute>
+                      <PackagingList />
+                    </PrivateRoute>
+                  } />
+                </Routes>
               </Box>
-            </Toolbar>
-          </AppBar>
-          <Toolbar />
-          <Container 
-            component="main" 
-            sx={{ 
-              flexGrow: 1, 
-              pt: { xs: 2, sm: 3, md: 4 }, 
-              pb: { xs: 4, sm: 5, md: 6 },
-              px: { xs: 2, sm: 3, md: 4 },
-              backgroundColor: 'transparent',
-              maxWidth: '100%',
-              overflow: 'auto'
-            }}
-            maxWidth={false}
-          >
-            <Box sx={{ 
-              maxWidth: '1600px', 
-              mx: 'auto',
-              width: '100%'
-            }}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/ingredients" element={<IngredientList />} />
-                <Route path="/recipes" element={<RecipeList />} />
-                <Route path="/packaging" element={<PackagingList />} />
-              </Routes>
-            </Box>
-          </Container>
-        </Box>
+            </Container>
+          </Box>
+        </AuthProvider>
       </Router>
     </ThemeProvider>
   );
